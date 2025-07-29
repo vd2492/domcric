@@ -26,9 +26,11 @@ import { motion } from 'framer-motion';
 import SportsCricketIcon from '@mui/icons-material/SportsCricket';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import DownloadIcon from '@mui/icons-material/Download';
 import { Player, PlayerCategory, PlayerSubCategory } from './types';
 import { playerDataService } from './services/playerDataService';
 import PlayerCard from './components/PlayerCard';
+import ExportDialog from './components/ExportDialog';
 import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
@@ -123,6 +125,7 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdate, setLastUpdate] = useState<number>(0);
   const [openPlayer, setOpenPlayer] = useState<Player | null>(null);
+  const [showExportDialog, setShowExportDialog] = useState(false);
 
   useEffect(() => {
     // Subscribe to data updates
@@ -457,7 +460,7 @@ const App: React.FC = () => {
 
               <Fab
                 color="primary"
-                sx={{ position: 'fixed', bottom: 16, right: 16 }}
+                sx={{ position: 'fixed', bottom: 80, right: 16, zIndex: 1000 }}
                 onClick={() => setShowFinal11(true)}
               >
                 <SportsCricketIcon />
@@ -478,6 +481,23 @@ const App: React.FC = () => {
                       onClick={handleDeselectAll}
                     >
                       Deselect All
+                    </Button>
+                  )}
+                  {selectedPlayers.size > 0 && (
+                    <Button
+                      variant="contained"
+                      startIcon={<DownloadIcon />}
+                      onClick={() => setShowExportDialog(true)}
+                      sx={{
+                        background: 'linear-gradient(45deg, #00ff9f 30%, #00cc7f 90%)',
+                        color: '#000',
+                        fontWeight: 600,
+                        '&:hover': {
+                          background: 'linear-gradient(45deg, #00cc7f 30%, #00ff9f 90%)',
+                        },
+                      }}
+                    >
+                      Export Team
                     </Button>
                   )}
                   <Fab
@@ -505,6 +525,13 @@ const App: React.FC = () => {
               {openPlayer && <PlayerCard player={openPlayer} />}
             </Box>
           </Dialog>
+          
+          <ExportDialog
+            open={showExportDialog}
+            onClose={() => setShowExportDialog(false)}
+            players={getSelectedPlayersList()}
+            teamName="Domestic Best XI"
+          />
       </Container>
     </ThemeProvider>
   );
